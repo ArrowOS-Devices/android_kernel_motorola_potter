@@ -430,6 +430,9 @@ static ssize_t yurex_read(struct file *file, char *buffer, size_t count, loff_t 
 	bytes_read = snprintf(in_buffer, 20, "%lld\n", dev->bbu);
 	spin_unlock_irqrestore(&dev->lock, flags);
 
+	if (WARN_ON_ONCE(len >= sizeof(in_buffer)))
+		return -EIO;
+
 	if (*ppos < bytes_read) {
 		if (copy_to_user(buffer, in_buffer + *ppos, bytes_read - *ppos))
 			retval = -EFAULT;
